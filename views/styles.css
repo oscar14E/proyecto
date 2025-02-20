@@ -31,14 +31,15 @@
 }
 
 /* Estilos para el menú colapsado (pantallas menores a 988px) */
+/* Estilos para el menú colapsado (pantallas menores a 988px) */
 @media (max-width: 988px) {
     .bg-green {
         background-color: transparent !important;
-        background-image: url("../Icon/escudo_pasto.jpg");
+        background-image: url("");
         background-size: contain;
         background-repeat: no-repeat;
         background-position: center;
-        height: 100px;
+        height: 150px; /* Ajusta la altura para que el fondo sea visible */
     }
 
     .navbar-collapse {
