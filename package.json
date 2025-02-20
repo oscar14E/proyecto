@@ -4,7 +4,7 @@
   "main": "autenticacion.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node autenticacion.js"
+    "start": "login.html"
   },
   "keywords": [],
   "author": "",
