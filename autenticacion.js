@@ -3,11 +3,11 @@ const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 const bcrypt = require('bcryptjs');
-const path = require('path'); // Necesario para servir archivos estáticos
+const path = require('path');
 
 const app = express();
 app.use(express.json());
-app.use(path.join(__dirname, "views")); // Sirve archivos estáticos de la carpeta 'public'
+app.use(express.static(path.join(__dirname, "public"))); // Asegúrate de que 'public' es la carpeta con 'login.html'
 
 mongoose.connect('mongodb+srv://oseduar123:eduardo1010@institucion.tmnkl.mongodb.net/?retryWrites=true&w=majority&appName=institucion', { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('Conectado a la base de datos'))
@@ -38,7 +38,7 @@ app.post('/login', async (req, res) => {
 
 // Enviar el archivo HTML cuando se accede a la raíz
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'login.html')); // Asegúrate de que 'login.html' esté en el mismo directorio que este archivo
+  res.sendFile(path.join(__dirname, 'public', 'login.html')); // Verifica que login.html esté en la carpeta 'public'
 });
 
 const port = process.env.PORT || 3000;
