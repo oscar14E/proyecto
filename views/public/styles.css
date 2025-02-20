@@ -1,0 +1,61 @@
+.bg-green {
+    background-color: #00923f !important;
+    transition: background-color 0.3s ease;
+}
+
+.navbar-nav .nav-link {
+    color: white !important;
+    font-weight: bold;
+    margin: 0 10px;
+}
+
+.navbar-nav .nav-link:hover {
+    text-decoration: underline;
+}
+
+.correo-texto {
+    color: white;
+    font-weight: bold;
+    margin-right: 15px;
+}
+
+.navbar-nav .nav-link[aria-label="Facebook"],
+.navbar-nav .nav-link[aria-label="Twitter"] {
+    font-size: 20px;
+    color: white;
+}
+
+.navbar-nav .nav-link[aria-label="Facebook"]:hover,
+.navbar-nav .nav-link[aria-label="Twitter"]:hover {
+    opacity: 0.8;
+}
+
+/* Estilos para el menú colapsado (pantallas menores a 988px) */
+@media (max-width: 988px) {
+    .bg-green {
+        background-color: transparent !important;
+        background-image: url("../Icon/escudo_pasto.jpg");
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        height: 100px;
+    }
+
+    .navbar-collapse {
+        background-color: transparent !important;
+    }
+
+    .navbar-nav {
+        background-color: #00923f;
+        padding: 10px;
+        border-radius: 5px;
+    }
+
+    .navbar-toggler {
+        margin-left: auto;
+    }
+
+    .navbar-toggler-icon {
+        filter: invert(1);
+    }
+}

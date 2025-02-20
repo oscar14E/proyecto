@@ -3,22 +3,27 @@ const cors = require('cors');
 const express = require('express');
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
-const nodemailer = require('nodemailer');
 const bcrypt = require('bcryptjs');
 const path = require('path');
 
-
 const app = express();
 app.use(express.json());
-app.use(express.static(path.join(__dirname, "views"))); // Sirve archivos estáticos desde la carpeta 'views'
 app.use(cors());
 
-// Conexión a la base de datos
-mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log('Conectado a la base de datos'))
-  .catch(err => console.error('Error de conexión a la base de datos', err));
+// 📌 Servir archivos estáticos (página principal accesible sin login)
+app.use(express.static(path.join(__dirname, 'public')));
 
-// Definición del esquema de usuario
+// 📌 Ruta para la página de login (no accesible directamente en public)
+app.get('/login', (req, res) => {
+  res.sendFile(path.join(__dirname, 'views', 'login.html'));
+});
+
+// 📌 Conectar a MongoDB
+mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log('✅ Conectado a la base de datos'))
+  .catch(err => console.error('❌ Error de conexión a la base de datos', err));
+
+// 📌 Esquema y modelo de usuario
 const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
@@ -26,38 +31,29 @@ const userSchema = new mongoose.Schema({
 });
 const User = mongoose.model('User', userSchema);
 
-// Endpoint de login
+// 📌 Endpoint de login
 app.post('/login', async (req, res) => {
   try {
-    console.log('Intento de login:', req.body);  // <-- Debug
     const { email, password } = req.body;
     const user = await User.findOne({ email });
     
-    if (!user) {
-      console.log('Usuario no encontrado');  // <-- Debug
-      return res.status(401).send('Credenciales incorrectas');
-    }
-
-    const validPassword = await bcrypt.compare(password, user.password);
-    if (!validPassword) {
-      console.log('Contraseña incorrecta');  // <-- Debug
-      return res.status(401).send('Credenciales incorrectas');
+    if (!user || !await bcrypt.compare(password, user.password)) {
+      return res.status(401).send('❌ Credenciales incorrectas');
     }
 
     const token = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
     res.json({ token });
   } catch (error) {
-    console.error('Error en login:', error);  // <-- Debug
-    res.status(500).send('Error en el login');
+    res.status(500).send('❌ Error en el login');
   }
 });
 
-// Enviar el archivo HTML cuando se accede a la raíz
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'views', 'login.html')); // Accede a 'login.html' desde la carpeta 'views'
+// 📌 Ruta protegida después del login
+app.get('/dashboard', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));  // Esta sería la página protegida después del login
 });
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
-  console.log(`Servidor escuchando en el puerto ${port}`);
+  console.log(`🚀 Servidor en http://localhost:${port}`);
 });
