@@ -7,12 +7,14 @@ const path = require('path');
 
 const app = express();
 app.use(express.json());
-app.use(express.static(path.join(__dirname, "public"))); // Asegúrate de que 'public' es la carpeta con 'login.html'
+app.use(express.static(path.join(__dirname, "views"))); // Sirve archivos estáticos desde la carpeta 'views'
 
-mongoose.connect('mongodb+srv://oseduar123:eduardo1010@institucion.tmnkl.mongodb.net/?retryWrites=true&w=majority&appName=institucion', { useNewUrlParser: true, useUnifiedTopology: true })
+// Conexión a la base de datos
+mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('Conectado a la base de datos'))
   .catch(err => console.error('Error de conexión a la base de datos', err));
 
+// Definición del esquema de usuario
 const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
@@ -29,7 +31,7 @@ app.post('/login', async (req, res) => {
       return res.status(401).send('Credenciales incorrectas');
     }
 
-    const token = jwt.sign({ userId: user._id, role: user.role }, 'secret', { expiresIn: '1h' });
+    const token = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
     res.json({ token });
   } catch (error) {
     res.status(500).send('Error en el login');
@@ -38,7 +40,7 @@ app.post('/login', async (req, res) => {
 
 // Enviar el archivo HTML cuando se accede a la raíz
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'login.html')); // Verifica que login.html esté en la carpeta 'public'
+  res.sendFile(path.join(__dirname, 'views', 'login.html')); // Accede a 'login.html' desde la carpeta 'views'
 });
 
 const port = process.env.PORT || 3000;
