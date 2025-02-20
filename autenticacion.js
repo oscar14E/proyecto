@@ -7,7 +7,7 @@ const path = require('path'); // Necesario para servir archivos estáticos
 
 const app = express();
 app.use(express.json());
-app.use(express.static('public')); // Sirve archivos estáticos de la carpeta 'public'
+app.use(path.join(__dirname, "views")); // Sirve archivos estáticos de la carpeta 'public'
 
 mongoose.connect('mongodb+srv://oseduar123:eduardo1010@institucion.tmnkl.mongodb.net/?retryWrites=true&w=majority&appName=institucion', { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('Conectado a la base de datos'))
