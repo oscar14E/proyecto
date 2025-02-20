@@ -1,4 +1,5 @@
 require('dotenv').config();
+const cors = require('cors');
 const express = require('express');
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
@@ -6,9 +7,11 @@ const nodemailer = require('nodemailer');
 const bcrypt = require('bcryptjs');
 const path = require('path');
 
+
 const app = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "views"))); // Sirve archivos estáticos desde la carpeta 'views'
+app.use(cors());
 
 // Conexión a la base de datos
 mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
