@@ -29,15 +29,25 @@ const User = mongoose.model('User', userSchema);
 // Endpoint de login
 app.post('/login', async (req, res) => {
   try {
+    console.log('Intento de login:', req.body);  // <-- Debug
     const { email, password } = req.body;
     const user = await User.findOne({ email });
-    if (!user || !await bcrypt.compare(password, user.password)) {
+    
+    if (!user) {
+      console.log('Usuario no encontrado');  // <-- Debug
+      return res.status(401).send('Credenciales incorrectas');
+    }
+
+    const validPassword = await bcrypt.compare(password, user.password);
+    if (!validPassword) {
+      console.log('Contraseña incorrecta');  // <-- Debug
       return res.status(401).send('Credenciales incorrectas');
     }
 
     const token = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
     res.json({ token });
   } catch (error) {
+    console.error('Error en login:', error);  // <-- Debug
     res.status(500).send('Error en el login');
   }
 });
