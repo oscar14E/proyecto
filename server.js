@@ -9,7 +9,11 @@ require('dotenv').config();
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: 'https://proyecto-3-apme.onrender.com', // Permite solicitudes desde cualquier origen (en producción, usa tu dominio)
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos
+  allowedHeaders: ['Content-Type', 'Authorization'] // Cabeceras permitidas
+}));
 
 // Conexión a la base de datos
 mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })

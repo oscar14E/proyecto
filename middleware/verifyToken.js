@@ -1,20 +1,27 @@
-const jwt = require('jsonwebtoken');
+const login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
 
-const verifyToken = (req, res, next) => {
-  const token = req.header('Authorization') && req.header('Authorization').split(' ')[1];
-
-  if (!token) {
-    return res.status(401).json({ error: 'Acceso no autorizado' });
-  }
-
-  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-    if (err) {
-      return res.status(403).json({ error: 'Token inválido' });
+    if (!user) {
+      return res.status(401).json({ error: 'Credenciales incorrectas' });
     }
-    req.user = decoded;  // Guardamos la información decodificada en la solicitud
-    next();
-  });
+
+    const validPassword = await bcrypt.compare(password, user.password);
+    if (!validPassword) {
+      return res.status(401).json({ error: 'Credenciales incorrectas' });
+    }
+
+    // Generar el token JWT
+    const token = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+    // Depuración: Verificar el rol antes de enviar la respuesta
+    console.log('Rol del usuario:', user.role);
+
+    // Devolver el token y el rol en la respuesta
+    res.json({ token, role: user.role });
+  } catch (error) {
+    console.error('Error en login:', error);
+    res.status(500).json({ error: 'Error en el login' });
+  }
 };
-
-
-module.exports = verifyToken;  // Exportamos el middleware correctamente
